@@ -6,19 +6,31 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import com.haeun.dto.MemberDto;
 
 public class MemberDao {
 	//멤버변수로 한번만 선언해서 사용(connection)
-	private String url = "jdbc:mysql://localhost:3306/odbo";
-	private	String username = "root";
-	private String password = "12345";
-	private String driverName="com.mysql.jdbc.Driver";
+//	private String url = "jdbc:mysql://localhost:3306/odbo";
+//	private	String username = "root";
+//	private String password = "12345";
+//	private String driverName="com.mysql.jdbc.Driver";
+	
+	private DataSource datasource;
 	
 	//생성자 호출 -> 드라이버 로딩
 	public MemberDao() {
+//		try {
+//			Class.forName(driverName);	//드라이버 로딩
+//		}catch(Exception e) {
+//			e.printStackTrace();
+//		}
 		try {
-			Class.forName(driverName);	//드라이버 로딩
+			Context context = new InitialContext();
+			datasource = (DataSource)context.lookup("java:comp/env/jdbc/odbo");			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -33,7 +45,8 @@ public class MemberDao {
 		ResultSet rs = null;
 		
 		try {
-			conn = DriverManager.getConnection(url, username, password);
+			//conn = DriverManager.getConnection(url, username, password);
+			conn = datasource.getConnection();
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("select * from testmember");
 			
